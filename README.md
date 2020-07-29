@@ -1,0 +1,3 @@
+- [Azure Functions PowerShell Reference](https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-reference-powershell)
+- [Log Analytics HTTP Collecter API Refernce](https://docs.microsoft.com/ja-jp/azure/azure-monitor/platform/data-collector-api)
+- [Run your Azure Functions from a package file](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)

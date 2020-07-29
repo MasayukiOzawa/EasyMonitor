@@ -1,0 +1,145 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "maxThread": {
+            "type": "int",
+            "defaultValue": 2
+        },
+        "sqlConnectionString": {
+            "type": "string",
+            "defaultValue": ""
+        }
+
+    },
+    "functions": [],
+    "variables": {
+        "uniqueId": "[uniqueString(resourceGroup().id)]"
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[concat('ezmonitor-', variables('uniqueId'))]",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "properties": {
+                "ApplicationId": "[concat('ezmonitor-', variables('uniqueId'))]",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        },
+        {
+            "name": "[concat('ezmonitor', variables('uniqueId'))]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "tags": {},
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            }
+
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('ezmonitor-', variables('uniqueId'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "tags": {},
+            "sku": {
+                "Tier": "Dynamic",
+                "Name": "Y1"
+            },
+            "kind": "",
+            "properties": {
+                "name": "[concat('ezmonitor-', variables('uniqueId'))]",
+                "workerSize": "0",
+                "workerSizeId": "0",
+                "numberOfWorkers": "1",
+                "hostingEnvironment": ""
+            }
+        },
+        {
+            "name": "[concat('ezmonitor-', variables('uniqueId'))]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "Free"
+                },
+                "features": {
+                    "searchVersion": 1
+                }
+            }
+        },
+        {
+            "name": "[concat('ezmonitor-', variables('uniqueId'))]",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp",
+            "dependsOn": [
+                "[concat('Microsoft.insights/components/', concat('ezmonitor-', variables('uniqueId')))]",
+                "[concat('Microsoft.Web/serverfarms/', concat('ezmonitor-', variables('uniqueId')))]",
+                "[concat('Microsoft.Storage/storageAccounts/', concat('ezmonitor', variables('uniqueId')))]",
+                "[concat('microsoft.operationalinsights/workspaces/', concat('ezmonitor-', variables('uniqueId')))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat('ezmonitor-', variables('uniqueId')))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "powershell"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(concat('microsoft.insights/components/', concat('ezmonitor-', variables('uniqueId'))), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(concat('microsoft.insights/components/', concat('ezmonitor-', variables('uniqueId'))), '2015-05-01').ConnectionString]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',concat('ezmonitor', variables('uniqueId')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', concat('ezmonitor', variables('uniqueId'))), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',concat('ezmonitor', variables('uniqueId')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', concat('ezmonitor', variables('uniqueId'))), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[concat('ezmonitor', variables('uniqueId'))]"
+                        },
+                        {
+                            "name": "LAW_WORKSPACEID",
+                            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', concat('ezmonitor-', variables('uniqueId'))), '2017-03-15-preview').customerId]"
+                        },
+                        {
+                            "name": "LAW_SHAREDKEY",
+                            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', concat('ezmonitor-', variables('uniqueId'))), '2015-11-01-preview').primarySharedKey]"
+                        },
+                        {
+                            "name": "SQL_CONNECTION_STRING",
+                            "value": "[parameters('sqlConnectionString')]"
+                        },
+                        {
+                            "name": "MAX_THREAD",
+                            "value": "[parameters('maxThread')]"
+                        }
+                    ],
+                    "powerShellVersion": "~7"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
