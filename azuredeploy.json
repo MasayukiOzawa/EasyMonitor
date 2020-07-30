@@ -2,15 +2,26 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "sqlServerName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "databaseName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "databaseLogin": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "databaseLoginPassword": {
+            "type": "securestring",
+            "defaultValue": ""
+        },
         "maxThread": {
             "type": "int",
             "defaultValue": 2
-        },
-        "sqlConnectionString": {
-            "type": "string",
-            "defaultValue": ""
         }
-
     },
     "functions": [],
     "variables": {
@@ -129,7 +140,11 @@
                         },
                         {
                             "name": "SQL_CONNECTION_STRING",
-                            "value": "[parameters('sqlConnectionString')]"
+                            "value": "[concat('Server=', parameters('sqlServerName'), '.database.windows.net;MultipleActiveResultSets=True;Application Name=EzMonitor;Database=',parameters('databaseName'), ';user=', parameters('databaseLogin'), ';password=', parameters('databaseLoginPassword'))]"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "https://github.com/MasayukiOzawa/EzMonitor/releases/download/0.1.1.1/EzMonitor.zip"
                         },
                         {
                             "name": "MAX_THREAD",
