@@ -4,7 +4,7 @@ param($Timer)
 
 Write-Host "Function Start"
 if (-not (Get-Module -ListAvailable powershell-yaml)) {
-    Write-Error "powershell-yaml is not installed."
+    Install-Module powershell-yaml
 }
 
 $yamlCollections = Get-ChildItem ".\conf.d\*.yaml"

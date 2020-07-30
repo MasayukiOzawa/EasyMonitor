@@ -140,7 +140,7 @@
                         },
                         {
                             "name": "SQL_CONNECTION_STRING",
-                            "value": "[concat('Server=', parameters('sqlServerName'), '.database.windows.net;MultipleActiveResultSets=True;Application Name=EzMonitor;Database=',parameters('databaseName'), ';user=', parameters('databaseLogin'), ';password=', parameters('databaseLoginPassword'))]"
+                            "value": "[concat('Server=', parameters('sqlServerName'), ';MultipleActiveResultSets=True;Application Name=EzMonitor;Database=',parameters('databaseName'), ';user=', parameters('databaseLogin'), ';password=', parameters('databaseLoginPassword'))]"
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
