@@ -2,6 +2,7 @@ metrics_name: wait_task
 monitor_sql: |
     SELECT 
         @@servername AS server_name,
+        DB_NAME() AS database_name,
         *
     FROM
     (

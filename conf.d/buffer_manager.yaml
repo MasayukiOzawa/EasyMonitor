@@ -2,6 +2,7 @@ metrics_name: buffer_manager
 monitor_sql: |
     SELECT
         @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
         [Page lookups/sec] AS page_lookups_sec,
         [Free list stalls/sec] AS free_list_stalls_sec,
         [Database pages] AS database_pages,

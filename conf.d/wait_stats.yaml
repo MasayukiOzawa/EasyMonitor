@@ -3,6 +3,7 @@ monitor_sql: |
     -- https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-query-store-wait-stats-transact-sql
     SELECT
         @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
         *
     FROM
     (
