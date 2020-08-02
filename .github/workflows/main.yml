@@ -10,7 +10,7 @@ jobs:
     - name: Archive Release
       uses: thedoctor0/zip-release@master
       with:
-        filename: EzMonitor.zip
+        filename: EZMonitor.zip
         exclusions: '*.git* .vscode README.md azuredeploy.json'
     - name: Delete latest release
       uses: ame-yu/action-delete-latest-release@v2
@@ -30,6 +30,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./EzMonitor.zip
-        asset_name: EzMonitor.zip
+        asset_path: ./EZMonitor.zip
+        asset_name: EZMonitor.zip
         asset_content_type: application/zip
