@@ -1,0 +1,48 @@
+metrics_name: buffer_manager
+monitor_sql: |
+    SELECT
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
+        [Page lookups/sec] AS page_lookups_sec,
+        [Free list stalls/sec] AS free_list_stalls_sec,
+        [Database pages] AS database_pages,
+        [Target pages] AS target_pages,
+        [Lazy writes/sec] AS lazy_writes_sec,
+        [Readahead pages/sec] AS readahead_pages_sec,
+        [Readahead time/sec] AS readahead_time_sec,
+        [Page reads/sec] AS page_reads_sec,
+        [Page writes/sec] AS page_writes_sec,
+        [Checkpoint pages/sec] AS checkpoint_pages_sec,
+        [Background writer pages/sec] AS background_writer_pages_sec,
+        [Page life expectancy] AS page_life_expectancy
+    FROM
+        (
+        SELECT 
+            RTRIM(counter_name) AS counter_name,
+            -- '[' + RTRIM(counter_name) + ']' + ' AS ' + REPLACE(REPLACE(LOWER(RTRIM(counter_name)), ' ', '_'), '/', '_') AS counter_name_pg,
+            cntr_value
+        FROM 
+            sys.dm_os_performance_counters WITH(NOLOCK)
+        WHERE
+            object_name LIKE '%Buffer Manager%'
+            AND
+            cntr_type IN(65792, 272696576)
+        ) AS T
+        PIVOT(
+            MAX(cntr_value)
+            FOR counter_name IN(
+                [Page lookups/sec],
+                [Free list stalls/sec],
+                [Database pages],
+                [Target pages],
+                [Lazy writes/sec],
+                [Readahead pages/sec],
+                [Readahead time/sec],
+                [Page reads/sec],
+                [Page writes/sec],
+                [Checkpoint pages/sec],
+                [Background writer pages/sec],
+                [Page life expectancy]
+            )
+        ) AS PVT
+    OPTION(MAXDOP 1)

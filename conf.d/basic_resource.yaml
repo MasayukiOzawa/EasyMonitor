@@ -1,0 +1,60 @@
+metrics_name: basic_resource
+monitor_sql: |
+  -- https://github.com/Microsoft/azuredatastudio/tree/master/samples/serverReports
+  SELECT TOP (1)
+      @@SERVERNAME AS server_name,
+      DB_NAME() AS database_name
+      , SQLProcessUtilization AS [SQL Server Process CPU Utilization]
+      , SystemIdle AS [System Idle Process]
+      , 100 - SystemIdle - SQLProcessUtilization AS [Other Process CPU Utilization]
+      , PerfInfo.*
+      , (SELECT SUM(current_workers_count) FROM sys.dm_os_schedulers WHERE status = 'VISIBLE ONLINE') AS [Worker Count]
+  FROM (
+      SELECT TOP 1
+          record.value('(./Record/@id)[1]', 'int') AS record_id
+          , record.value('(./Record/SchedulerMonitorEvent/SystemHealth/SystemIdle)[1]', 'int') AS [SystemIdle]
+          , record.value('(./Record/SchedulerMonitorEvent/SystemHealth/ProcessUtilization)[1]', 'int') AS [SQLProcessUtilization]
+          , [timestamp]
+      FROM (
+          SELECT [timestamp]
+              , convert(XML, record) AS [record]
+          FROM sys.dm_os_ring_buffers
+          WHERE ring_buffer_type = N'RING_BUFFER_SCHEDULER_MONITOR'
+              AND record LIKE '%<systemHealth>%'
+          ) AS x
+      ORDER BY timestamp DESC
+      ) AS y
+  CROSS JOIN
+  (
+      SELECT
+          [Database Cache Memory (KB)] / 1024 AS [Database Cache Memory MB],
+          [Plan Cache Memory MB],
+          [Target Server Memory (KB)] / 1024 AS [Target Server Memory MB], 
+          [Total Server Memory (KB)] / 1024 AS [Total Server Memory MB],
+          [User Connections],
+          [Batch Requests/sec] AS [Batch Requests sec]
+      FROM
+      (
+          SELECT 
+              RTRIM(counter_name) AS counter_name,
+              cntr_value
+          FROM
+              sys.dm_os_performance_counters 
+          WHERE 
+              (object_name like '%Memory Manager%'
+                  AND counter_name in ('Database Cache Memory (KB)', 'Target Server Memory (KB)', 'Total Server Memory (KB)'))
+              OR (counter_name IN('User Connections', 'Batch Requests/sec'))
+      ) AS T
+      PIVOT(
+          MAX(cntr_value)
+          FOR
+          counter_name IN ([Database Cache Memory (KB)], [Target Server Memory (KB)], [Total Server Memory (KB)], [Batch Requests/sec], [User Connections])
+      ) AS PVT
+      CROSS JOIN
+      (
+      SELECT CEILING(cntr_value * 8.0 / 1024) AS [Plan Cache Memory MB] 
+      FROM sys.dm_os_performance_counters 
+      WHERE counter_name = 'Cache Objects in use' AND instance_name = '_Total'
+      ) AS PlanInfo
+  ) AS PerfInfo
+  OPTION (MAXDOP 1)

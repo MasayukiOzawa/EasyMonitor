@@ -1,0 +1,21 @@
+metrics_name: database_file_usage
+monitor_sql: |
+    SELECT
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
+        df.file_id,
+        df.type_desc,
+        df.name,
+        vf.num_of_reads,
+        CEILING(vf.num_of_bytes_read / POWER(1024.0, 2)) AS num_of_Mbytes_read,
+        vf.io_stall_read_ms,
+        vf.num_of_writes,
+        CEILING(vf.num_of_bytes_written / POWER(1024.0, 2)) AS num_of_Mbytes_written,
+        vf.io_stall_write_ms,
+        CEILING(size_on_disk_bytes / POWER(1024.0, 2)) AS size_on_disk_Mbytes,
+        CEILING(df.max_size * 8.0 / 1024) AS max_size_MBytes
+    FROM
+        sys.dm_io_virtual_file_stats(DB_ID(), NULL) AS vf
+        LEFT JOIN sys.database_files AS df
+            ON df.file_id = vf.file_id
+    OPTION(MAXDOP 1)
