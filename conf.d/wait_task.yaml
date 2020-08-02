@@ -25,15 +25,8 @@ monitor_sql: |
         END AS return_code,
         es.host_name,
         es.program_name,
-        --st.text,
-        --SUBSTRING(st.text, (er.statement_start_offset/2) + 1,  
-        --((CASE statement_end_offset   
-        --WHEN -1 THEN DATALENGTH(ST.text)  
-        --ELSE er.statement_end_offset END   
-        --    - er.statement_start_offset)/2) + 1) AS statement_text,
         CONVERT(varchar(100), er.query_hash, 1) AS query_hash,
         CONVERT(varchar(100), er.query_plan_hash ,1) AS query_plan_hash, 
-        -- qp.query_plan,
         oth.creation_time,
         es.login_time,
         es.last_request_start_time,
@@ -84,4 +77,79 @@ monitor_sql: |
     WHERE
         ot.session_id <> @@SPID
     ) AS T
+    UNION
+    SELECT
+        @@servername AS server_name,
+        DB_NAME() AS database_name,
+        AwaitingHeadBlocker.session_id,
+        NULL AS os_thread_id,
+        NULL AS request_id,
+        NULL AS scheduler_id,
+        NULL AS exec_context_id,
+        AwaitingHeadBlocker.status AS session_status,
+        NULL AS request_status,
+        NULL AS state,
+        NULL AS task_state,
+        NULL AS return_code,
+        AwaitingHeadBlocker.host_name,
+        AwaitingHeadBlocker.program_name,
+        NULL AS query_hash,
+        NULL AS query_plan_hash, 
+        NULL creation_time,
+        AwaitingHeadBlocker.login_time,
+        AwaitingHeadBlocker.last_request_start_time,
+        AwaitingHeadBlocker.last_request_end_time,
+        AwaitingHeadBlocker.login_name,
+        NULL AS wait_time,
+        NULL AS wait_duration_ms,
+        NULL AS request_wait_type,
+        NULL AS request_last_wait_type,
+        NULL AS request_wait_resource,
+        NULL AS worker_last_wait_type,
+        NULL AS waiting_task_wait_type,
+        NULL AS waiting_task_resource_description,
+        NULL AS request_blocking_session_id,
+        NULL AS waiting_tasks_blocking_session_id,
+        NULL AS blocking_exec_context_id,
+        NULL AS context_switches_count,
+        NULL AS context_switch_count,
+        NULL AS kernel_time,
+        NULL AS usermode_time,
+        AwaitingHeadBlocker.total_scheduled_time,
+        NULL AS cpu_time,
+        AwaitingHeadBlocker.total_elapsed_time AS session_total_elapsed_time,
+        NULL AS request_total_elapsed_time,
+        NULL AS stack_bytes_committed,
+        NULL AS stack_bytes_used,
+        NULL AS task_pending_io_count,
+        NULL AS worker_pending_io_count,
+        NULL AS task_pending_io_byte_count,
+        NULL AS worker_pending_io_byte_count,
+        NULL AS task_pending_io_byte_average,
+        NULL AS worker_pending_io_byte_average
+    FROM
+    (
+        SELECT 
+            es.session_id,
+            es.status,
+            es.host_name,
+            es.program_name,
+            es.login_time,
+            es.last_request_start_time,
+            es.last_request_end_time,
+            es.login_name,
+            es.total_scheduled_time,
+            es.total_elapsed_time
+        FROM 
+            sys.dm_exec_sessions  AS es
+            LEFT JOIN sys.dm_exec_requests AS er
+                ON er.session_id = es.session_id
+            LEFT JOIN sys.dm_exec_requests AS er2
+                ON er2.blocking_session_id = es.session_id
+        WHERE 
+            er2.blocking_session_id IS NOT NULL
+            AND er.blocking_session_id IS NULL
+            AND es.session_id > 50
+    ) AS AwaitingHeadBlocker
     OPTION (MAXDOP 1)
+

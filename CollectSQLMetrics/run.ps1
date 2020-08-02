@@ -24,6 +24,9 @@ try {
         $yaml = (Get-Content $PSItem.FullName) | ConvertFrom-Yaml
         $sql = $yaml.monitor_sql
         $logType = $yaml.metrics_name
+        if($null -eq $logType){
+            throw "No metrics_name is set."
+        }
 
         $cmd = ($using:con).CreateCommand()
         $cmd.CommandText = $sql
