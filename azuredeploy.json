@@ -144,7 +144,7 @@
                         },
                         {
                             "name": "WEBSITE_RUN_FROM_PACKAGE",
-                            "value": "https://github.com/MasayukiOzawa/EzMonitor/releases/download/0.1.1.1/EzMonitor.zip"
+                            "value": "https://github.com/MasayukiOzawa/EzMonitor/releases/download/latest/EzMonitor.zip"
                         },
                         {
                             "name": "MAX_THREAD",
