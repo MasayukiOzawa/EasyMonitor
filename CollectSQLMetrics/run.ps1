@@ -1,9 +1,8 @@
 param($Timer)
 
 # Wait-Debugger
-
 Write-Host "Function Start"
-Write-Output $ENV:PSModulePath
+
 if (-not (Get-Module -ListAvailable powershell-yaml)) {
     throw "powershell-yaml is not installed."
 }
