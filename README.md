@@ -36,14 +36,16 @@ Azure Functions により、Log Analytics に取得された情報は、この W
 
 
 ## 参考情報
+- Deploy to Azure
+  - [デプロイ ボタンを使用して GitHub リポジトリからテンプレートをデプロイする](https://docs.microsoft.com/ja-jp/azure/azure-resource-manager/templates/deploy-to-azure-button)
 - Azure Functions
-  - [Azure Functions PowerShell Reference](https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-reference-powershell)
-  - [Run your Azure Functions from a package file](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)
+  - [Azure Functions の PowerShell 開発者向けガイド](https://docs.microsoft.com/ja-jp/azure/azure-functions/functions-reference-powershell)
+  - [Azure Functions をパッケージ ファイルから実行する](https://docs.microsoft.com/ja-jp/azure/azure-functions/run-functions-from-deployment-package)
 - Log Analytics
-  - [Log Analytics HTTP Collecter API Refernce](https://docs.microsoft.com/ja-jp/azure/azure-monitor/platform/data-collector-api)
-  - [Azure Monitor log queries](https://docs.microsoft.com/en-us/azure/azure-monitor/log-query/query-language)
-  - [SQL to Azure Monitor log query cheat sheet](https://docs.microsoft.com/en-us/azure/azure-monitor/log-query/sql-cheatsheet)
-  - [Kusto Query Language Overview](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/)
+  - [HTTP データ コレクター API を使用した Azure Monitor へのログ データの送信 (パブリック プレビュー)](https://docs.microsoft.com/ja-jp/azure/azure-monitor/platform/data-collector-api)
+  - [Azure Monitor ログ クエリ](https://docs.microsoft.com/ja-jp/azure/azure-monitor/log-query/query-language)
+  - [SQL から Azure Monitor ログ クエリへのチート シート](https://docs.microsoft.com/ja-jp/azure/azure-monitor/log-query/sql-cheatsheet)
+  - [Kusto Query Language Overview](https://docs.microsoft.com/ja-jp/azure/data-explorer/kusto/query/)
 - Log Analytics Workbook
-  - [Azure Monitor Workbooks](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/workbooks-overview)
-  - [Create interactive reports Azure Monitor for VMs with workbooks](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-workbooks)
+  - [Azure Monitor ブック](https://docs.microsoft.com/ja-jp/azure/azure-monitor/platform/workbooks-overview)
+  - [Azure Monitor for VMs のブックを使用した対話型レポートの作成](https://docs.microsoft.com/ja-jp/azure/azure-monitor/insights/vminsights-workbooks)
