@@ -139,7 +139,9 @@ monitor_sql: |
             es.last_request_end_time,
             es.login_name,
             es.total_scheduled_time,
-            es.total_elapsed_time
+            es.total_elapsed_time,
+            er.blocking_session_id,
+            er2.blocking_session_id
         FROM 
             sys.dm_exec_sessions  AS es
             LEFT JOIN sys.dm_exec_requests AS er
@@ -148,7 +150,7 @@ monitor_sql: |
                 ON er2.blocking_session_id = es.session_id
         WHERE 
             er2.blocking_session_id IS NOT NULL
-            AND er.blocking_session_id IS NULL
+            AND (er.blocking_session_id IS NULL or er.blocking_session_id = 0)
             AND es.session_id > 50
         ) AS AwaitingHeadBlocker
         OPTION (MAXDOP 1)
