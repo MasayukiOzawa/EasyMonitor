@@ -14,7 +14,7 @@ Deploy to Azure から ARM Template による展開を行うことで、メト�
   <img src="https://aka.ms/deploytoazurebutton" />
 </a>  
 
-1. 必要な情報を入力し、展開を行います。  
+2. 必要な情報を入力し、展開を行います。  
   - Sql Server Name :  情報取得対象の SQL Database 名 (ex : contoso.database.windows.net)  
   (SQL Database に接続する場合は、database.windows.net まで指定してください) 
   - Database Name : 取得対象の DB 名
