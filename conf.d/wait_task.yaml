@@ -85,12 +85,12 @@ monitor_sql: |
     SELECT 
         @@servername AS server_name,
         DB_NAME() AS database_name,
-        AwaitingHeadBlocker.session_id,
+        es.session_id,
         ISNULL(oth.os_thread_id,0) AS os_thread_id,
         ISNULL(ot.request_id,0) AS request_id,
         ISNULL(ot.scheduler_id,0) AS scheduler_id,
         ISNULL(ot.exec_context_id,0) AS exec_context_id,
-        AwaitingHeadBlocker.STATUS AS session_status,
+        es.STATUS AS session_status,
         ISNULL(er.STATUS,'') AS request_status,
         ISNULL(ow.state,'') AS state,
         ISNULL(ot.task_state,'') AS task_state,
@@ -105,15 +105,15 @@ monitor_sql: |
             THEN 'TIMEOUT'
             ELSE ''
         END AS return_code,
-        AwaitingHeadBlocker.host_name,
-        AwaitingHeadBlocker.program_name,
+        es.host_name,
+        es.program_name,
         CONVERT(varchar(100),er.query_hash,1) AS query_hash,
         CONVERT(varchar(100),er.query_plan_hash,1) AS query_plan_hash,
         ISNULL(oth.creation_time,'') AS creation_time,
-        AwaitingHeadBlocker.login_time,
-        AwaitingHeadBlocker.last_request_start_time,
-        AwaitingHeadBlocker.last_request_end_time,
-        AwaitingHeadBlocker.login_name,
+        es.login_time,
+        es.last_request_start_time,
+        es.last_request_end_time,
+        es.login_name,
         ISNULL(er.wait_time,0),
         ISNULL(owt.wait_duration_ms,0),
         ISNULL(er.wait_type,'') AS request_wait_type,
@@ -129,9 +129,9 @@ monitor_sql: |
         ISNULL(ow.context_switch_count,0) AS context_switch_count,
         ISNULL(oth.kernel_time,0) AS kernel_time,
         ISNULL(oth.usermode_time,0) AS usermode_time,
-        AwaitingHeadBlocker.total_scheduled_time,
+        es.total_scheduled_time,
         ISNULL(er.cpu_time,0) AS cpu_time,
-        AwaitingHeadBlocker.total_elapsed_time AS session_total_elapsed_time,
+        es.total_elapsed_time AS session_total_elapsed_time,
         ISNULL(er.total_elapsed_time,0) AS request_total_elapsed_time,
         ISNULL(oth.stack_bytes_committed,0) AS stack_bytes_committed,
         ISNULL(oth.stack_bytes_used,0) AS stack_bytes_used,
@@ -141,38 +141,22 @@ monitor_sql: |
         ISNULL(ow.pending_io_byte_count,0) AS worker_pending_io_byte_count,
         ISNULL(ot.pending_io_byte_average,0) AS task_pending_io_byte_average,
         ISNULL(ow.pending_io_byte_average,0) AS worker_pending_io_byte_average
-    FROM
-    (
-        SELECT 
-            es.session_id,
-            es.STATUS,
-            es.host_name,
-            es.program_name,
-            es.login_time,
-            es.last_request_start_time,
-            es.last_request_end_time,
-            es.login_name,
-            es.total_scheduled_time,
-            es.total_elapsed_time
-        FROM 
-            sys.dm_exec_sessions AS es
-            LEFT JOIN sys.dm_exec_requests AS er
-            ON er.session_id = es.session_id
-            LEFT JOIN sys.dm_exec_requests AS er2
-            ON er2.blocking_session_id = es.session_id
-        WHERE er2.blocking_session_id IS NOT NULL
-            AND (er.blocking_session_id IS NULL
-                OR er.blocking_session_id = 0)
-            AND es.session_id > 50
-    ) AS AwaitingHeadBlocker
-    LEFT JOIN sys.dm_os_waiting_tasks AS owt
-    ON owt.session_id = AwaitingHeadBlocker.session_id
-    LEFT JOIN sys.dm_os_tasks AS ot
-    ON ot.session_id = owt.session_id
-    LEFT JOIN sys.dm_os_workers AS ow
-    ON ow.task_address = ot.task_address
-    LEFT JOIN sys.dm_os_threads AS oth
-    ON oth.thread_address = ow.thread_address
-    LEFT JOIN sys.dm_exec_requests AS er
-    ON er.session_id = AwaitingHeadBlocker.session_id 
+    FROM 
+        sys.dm_exec_sessions AS es
+        LEFT JOIN sys.dm_exec_requests AS er
+        ON er.session_id = es.session_id
+        LEFT JOIN sys.dm_exec_requests AS er2
+        ON er2.blocking_session_id = es.session_id
+        LEFT JOIN sys.dm_os_waiting_tasks AS owt
+        ON owt.session_id = es.session_id
+        LEFT JOIN sys.dm_os_tasks AS ot
+        ON ot.session_id = owt.session_id
+        LEFT JOIN sys.dm_os_workers AS ow
+        ON ow.task_address = ot.task_address
+        LEFT JOIN sys.dm_os_threads AS oth
+        ON oth.thread_address = ow.thread_address
+    WHERE er2.blocking_session_id IS NOT NULL
+        AND (er.blocking_session_id IS NULL
+            OR er.blocking_session_id = 0)
+        AND es.session_id > 50
     OPTION(MAXDOP 1);

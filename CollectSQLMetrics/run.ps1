@@ -30,6 +30,7 @@ try {
 
         $cmd = ($using:con).CreateCommand()
         $cmd.CommandText = $sql
+        $cmd.CommandTimeout = 30
 
         $dt = New-Object System.Data.DataTable
         $sql = $yaml.monitor_sql
