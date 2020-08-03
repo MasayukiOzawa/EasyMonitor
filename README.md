@@ -13,6 +13,7 @@ Deploy to Azure から ARM Template による展開を行うことで、メト�
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMasayukiOzawa%2FEzMonitor%2Fmaster%2FDeployments%2Fazuredeploy.json" target="_blank">
   <img src="https://aka.ms/deploytoazurebutton" />
 </a>  
+
 1. 必要な情報を入力し、展開を行います。  
   - Sql Server Name :  情報取得対象の SQL Database 名 (ex : contoso.database.windows.net)  
   (SQL Database に接続する場合は、database.windows.net まで指定してください) 
