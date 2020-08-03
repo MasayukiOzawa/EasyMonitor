@@ -11,7 +11,7 @@ jobs:
       uses: thedoctor0/zip-release@master
       with:
         filename: EZMonitor.zip
-        exclusions: '*.git* .vscode README.md Deployments Workbook'
+        exclusions: '*.git* .vscode README.md Deployments Workbook img'
     - name: Delete latest release
       uses: ame-yu/action-delete-latest-release@v2
       with:
