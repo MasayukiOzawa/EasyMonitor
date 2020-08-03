@@ -1,4 +1,4 @@
-metrics_name: buffer_manager
+metrics_name: memory_manager
 monitor_sql: |
     SELECT
         @@SERVERNAME AS server_name,

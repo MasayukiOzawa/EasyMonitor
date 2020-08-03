@@ -6,149 +6,173 @@ monitor_sql: |
         *
     FROM
     (
-    SELECT
-    ot.session_id,
-    oth.os_thread_id,
-    ot.request_id,
-    ot.scheduler_id,
-    ot.exec_context_id,
-    es.status AS session_status,
-    er.status AS request_status,
-    ow.state,
-    ot.task_state,
-    CASE ow.return_code
-        WHEN 0  THEN 'SUCCESS'
-        WHEN 3 THEN 'DEADLOCK'
-        WHEN 4 THEN 'PREMATURE_WAKEUP'
-        WHEN 258 THEN 'TIMEOUT'
-        ELSE ''
-    END AS return_code,
-    es.host_name,
-    es.program_name,
-    CONVERT(varchar(100), er.query_hash, 1) AS query_hash,
-    CONVERT(varchar(100), er.query_plan_hash ,1) AS query_plan_hash, 
-    oth.creation_time,
-    es.login_time,
-    es.last_request_start_time,
-    es.last_request_end_time,
-    es.login_name,
-    er.wait_time,
-    owt.wait_duration_ms,
-    er.wait_type AS request_wait_type,
-    er.last_wait_type AS request_last_wait_type,
-    er.wait_resource AS request_wait_resource,
-    ow.last_wait_type AS worker_last_wait_type,
-    owt.wait_type AS waiting_task_wait_type,
-    ISNULL(owt.resource_description, '') AS waiting_task_resource_description,
-    er.blocking_session_id AS request_blocking_session_id,
-    ISNULL(owt.blocking_session_id, 0) AS waiting_tasks_blocking_session_id,
-    ISNULL(owt.blocking_exec_context_id, 0) AS blocking_exec_context_id,
-    ot.context_switches_count,
-    ow.context_switch_count,
-    oth.kernel_time,
-    oth.usermode_time,
-    es.total_scheduled_time,
-    er.cpu_time,
-    es.total_elapsed_time AS session_total_elapsed_time,
-    er.total_elapsed_time AS request_total_elapsed_time,
-    oth.stack_bytes_committed,
-    oth.stack_bytes_used,
-    ot.pending_io_count AS task_pending_io_count,
-    ow.pending_io_count AS worker_pending_io_count,
-    ot.pending_io_byte_count AS task_pending_io_byte_count,
-    ow.pending_io_byte_count AS worker_pending_io_byte_count,
-    ot.pending_io_byte_average AS task_pending_io_byte_average,
-    ow.pending_io_byte_average AS worker_pending_io_byte_average
-    from 
-    sys.dm_os_tasks AS ot
-    INNER JOIN sys.dm_exec_sessions AS es
-        on es.session_id = ot.session_id
-        and es.is_user_process = 1
-    INNER JOIN  sys.dm_os_workers AS ow
-        on ow.task_address = ot.task_address
-    INNER JOIN sys.dm_os_threads AS oth
-        on oth.thread_address = ow.thread_address
-    INNER JOIN sys.dm_os_waiting_tasks AS owt
-        on owt.waiting_task_address = ot.task_address
-    INNER JOIN sys.dm_exec_requests AS er
-        on er.session_id = ot.session_id
-    OUTER APPLY sys.dm_exec_sql_text(er.sql_handle) AS st
-    OUTER APPLY sys.dm_exec_query_plan(er.plan_handle) AS qp
-    WHERE
-    ot.session_id <> @@SPID
+        SELECT 
+            ot.session_id,
+            oth.os_thread_id,
+            ot.request_id,
+            ot.scheduler_id,
+            ot.exec_context_id,
+            es.STATUS AS session_status,
+            er.STATUS AS request_status,
+            ow.state,
+            ot.task_state,
+            CASE ow.return_code
+                WHEN 0
+                THEN 'SUCCESS'
+                WHEN 3
+                THEN 'DEADLOCK'
+                WHEN 4
+                THEN 'PREMATURE_WAKEUP'
+                WHEN 258
+                THEN 'TIMEOUT'
+                ELSE ''
+            END AS return_code,
+            es.host_name,
+            es.program_name,
+            CONVERT(varchar(100),er.query_hash,1) AS query_hash,
+            CONVERT(varchar(100),er.query_plan_hash,1) AS query_plan_hash,
+            oth.creation_time,
+            es.login_time,
+            es.last_request_start_time,
+            es.last_request_end_time,
+            es.login_name,
+            er.wait_time,
+            owt.wait_duration_ms,
+            er.wait_type AS request_wait_type,
+            er.last_wait_type AS request_last_wait_type,
+            er.wait_resource AS request_wait_resource,
+            ow.last_wait_type AS worker_last_wait_type,
+            owt.wait_type AS waiting_task_wait_type,
+            ISNULL(owt.resource_description,'') AS waiting_task_resource_description,
+            er.blocking_session_id AS request_blocking_session_id,
+            ISNULL(owt.blocking_session_id,0) AS waiting_tasks_blocking_session_id,
+            ISNULL(owt.blocking_exec_context_id,0) AS blocking_exec_context_id,
+            ot.context_switches_count,
+            ow.context_switch_count,
+            oth.kernel_time,
+            oth.usermode_time,
+            es.total_scheduled_time,
+            er.cpu_time,
+            es.total_elapsed_time AS session_total_elapsed_time,
+            er.total_elapsed_time AS request_total_elapsed_time,
+            oth.stack_bytes_committed,
+            oth.stack_bytes_used,
+            ot.pending_io_count AS task_pending_io_count,
+            ow.pending_io_count AS worker_pending_io_count,
+            ot.pending_io_byte_count AS task_pending_io_byte_count,
+            ow.pending_io_byte_count AS worker_pending_io_byte_count,
+            ot.pending_io_byte_average AS task_pending_io_byte_average,
+            ow.pending_io_byte_average AS worker_pending_io_byte_average
+        FROM 
+            sys.dm_os_tasks AS ot
+            INNER JOIN sys.dm_exec_sessions AS es
+            ON es.session_id = ot.session_id
+                AND es.is_user_process = 1
+            INNER JOIN sys.dm_os_workers AS ow
+            ON ow.task_address = ot.task_address
+            INNER JOIN sys.dm_os_threads AS oth
+            ON oth.thread_address = ow.thread_address
+            INNER JOIN sys.dm_os_waiting_tasks AS owt
+            ON owt.waiting_task_address = ot.task_address
+            INNER JOIN sys.dm_exec_requests AS er
+            ON er.session_id = ot.session_id
+            OUTER APPLY
+            sys.dm_exec_sql_text(er.sql_handle) AS st
+            OUTER APPLY sys.dm_exec_query_plan(er.plan_handle) AS qp
+        WHERE ot.session_id <> @@SPID
     ) AS T
     UNION
-    SELECT
+    SELECT 
         @@servername AS server_name,
         DB_NAME() AS database_name,
         AwaitingHeadBlocker.session_id,
-        0 AS os_thread_id,
-        0 AS request_id,
-        0 AS scheduler_id,
-        0 AS exec_context_id,
-        AwaitingHeadBlocker.status AS session_status,
-        '' AS request_status,
-        '' AS state,
-        '' AS task_state,
-        '' AS return_code,
+        ISNULL(oth.os_thread_id,0) AS os_thread_id,
+        ISNULL(ot.request_id,0) AS request_id,
+        ISNULL(ot.scheduler_id,0) AS scheduler_id,
+        ISNULL(ot.exec_context_id,0) AS exec_context_id,
+        AwaitingHeadBlocker.STATUS AS session_status,
+        ISNULL(er.STATUS,'') AS request_status,
+        ISNULL(ow.state,'') AS state,
+        ISNULL(ot.task_state,'') AS task_state,
+        CASE ow.return_code
+            WHEN 0
+            THEN 'SUCCESS'
+            WHEN 3
+            THEN 'DEADLOCK'
+            WHEN 4
+            THEN 'PREMATURE_WAKEUP'
+            WHEN 258
+            THEN 'TIMEOUT'
+            ELSE ''
+        END AS return_code,
         AwaitingHeadBlocker.host_name,
         AwaitingHeadBlocker.program_name,
-        '' AS query_hash,
-        '' AS query_plan_hash, 
-        '' creation_time,
+        CONVERT(varchar(100),er.query_hash,1) AS query_hash,
+        CONVERT(varchar(100),er.query_plan_hash,1) AS query_plan_hash,
+        ISNULL(oth.creation_time,'') AS creation_time,
         AwaitingHeadBlocker.login_time,
         AwaitingHeadBlocker.last_request_start_time,
         AwaitingHeadBlocker.last_request_end_time,
         AwaitingHeadBlocker.login_name,
-        0 AS wait_time,
-        0 AS wait_duration_ms,
-        '' AS request_wait_type,
-        '' AS request_last_wait_type,
-        '' AS request_wait_resource,
-        '' AS worker_last_wait_type,
-        '' AS waiting_task_wait_type,
-        '' AS waiting_task_resource_description,
-        0 AS request_blocking_session_id,
-        0 AS waiting_tasks_blocking_session_id,
-        0 AS blocking_exec_context_id,
-        0 AS context_switches_count,
-        0 AS context_switch_count,
-        0 AS kernel_time,
-        0 AS usermode_time,
+        ISNULL(er.wait_time,0),
+        ISNULL(owt.wait_duration_ms,0),
+        ISNULL(er.wait_type,'') AS request_wait_type,
+        ISNULL(er.last_wait_type,'') AS request_last_wait_type,
+        ISNULL(er.wait_resource,'') AS request_wait_resource,
+        ISNULL(ow.last_wait_type,'') AS worker_last_wait_type,
+        ISNULL(owt.wait_type,'') AS waiting_task_wait_type,
+        ISNULL(owt.resource_description,'') AS waiting_task_resource_description,
+        ISNULL(er.blocking_session_id,0) AS request_blocking_session_id,
+        ISNULL(owt.blocking_session_id,0) AS waiting_tasks_blocking_session_id,
+        ISNULL(owt.blocking_exec_context_id,0) AS blocking_exec_context_id,
+        ISNULL(ot.context_switches_count,0) AS context_switches_count,
+        ISNULL(ow.context_switch_count,0) AS context_switch_count,
+        ISNULL(oth.kernel_time,0) AS kernel_time,
+        ISNULL(oth.usermode_time,0) AS usermode_time,
         AwaitingHeadBlocker.total_scheduled_time,
-        0 AS cpu_time,
+        ISNULL(er.cpu_time,0) AS cpu_time,
         AwaitingHeadBlocker.total_elapsed_time AS session_total_elapsed_time,
-        0 AS request_total_elapsed_time,
-        0 AS stack_bytes_committed,
-        0 AS stack_bytes_used,
-        0 AS task_pending_io_count,
-        0 AS worker_pending_io_count,
-        0 AS task_pending_io_byte_count,
-        0 AS worker_pending_io_byte_count,
-        0 AS task_pending_io_byte_average,
-        0 AS worker_pending_io_byte_average
+        ISNULL(er.total_elapsed_time,0) AS request_total_elapsed_time,
+        ISNULL(oth.stack_bytes_committed,0) AS stack_bytes_committed,
+        ISNULL(oth.stack_bytes_used,0) AS stack_bytes_used,
+        ISNULL(ot.pending_io_count,0) AS task_pending_io_count,
+        ISNULL(ow.pending_io_count,0) AS worker_pending_io_count,
+        ISNULL(ot.pending_io_byte_count,0) AS task_pending_io_byte_count,
+        ISNULL(ow.pending_io_byte_count,0) AS worker_pending_io_byte_count,
+        ISNULL(ot.pending_io_byte_average,0) AS task_pending_io_byte_average,
+        ISNULL(ow.pending_io_byte_average,0) AS worker_pending_io_byte_average
     FROM
     (
-    SELECT 
-        es.session_id,
-        es.status,
-        es.host_name,
-        es.program_name,
-        es.login_time,
-        es.last_request_start_time,
-        es.last_request_end_time,
-        es.login_name,
-        es.total_scheduled_time,
-        es.total_elapsed_time
-    FROM 
-        sys.dm_exec_sessions  AS es
-        LEFT JOIN sys.dm_exec_requests AS er
+        SELECT 
+            es.session_id,
+            es.STATUS,
+            es.host_name,
+            es.program_name,
+            es.login_time,
+            es.last_request_start_time,
+            es.last_request_end_time,
+            es.login_name,
+            es.total_scheduled_time,
+            es.total_elapsed_time
+        FROM 
+            sys.dm_exec_sessions AS es
+            LEFT JOIN sys.dm_exec_requests AS er
             ON er.session_id = es.session_id
-        LEFT JOIN sys.dm_exec_requests AS er2
+            LEFT JOIN sys.dm_exec_requests AS er2
             ON er2.blocking_session_id = es.session_id
-    WHERE 
-        er2.blocking_session_id IS NOT NULL
-        AND (er.blocking_session_id IS NULL or er.blocking_session_id = 0)
-        AND es.session_id > 50
+        WHERE er2.blocking_session_id IS NOT NULL
+            AND (er.blocking_session_id IS NULL
+                OR er.blocking_session_id = 0)
+            AND es.session_id > 50
     ) AS AwaitingHeadBlocker
-    OPTION (MAXDOP 1)
+    LEFT JOIN sys.dm_os_waiting_tasks AS owt
+    ON owt.session_id = AwaitingHeadBlocker.session_id
+    LEFT JOIN sys.dm_os_tasks AS ot
+    ON ot.session_id = owt.session_id
+    LEFT JOIN sys.dm_os_workers AS ow
+    ON ow.task_address = ot.task_address
+    LEFT JOIN sys.dm_os_threads AS oth
+    ON oth.thread_address = ow.thread_address
+    LEFT JOIN sys.dm_exec_requests AS er
+    ON er.session_id = AwaitingHeadBlocker.session_id 
+    OPTION(MAXDOP 1);
