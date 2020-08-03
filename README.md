@@ -3,7 +3,7 @@
   <img src="https://aka.ms/deploytoazurebutton" />
 </a>
 
-EZMonitor (Easy Monitor) は、Azure Functions と Log Analytics を使用した、SQL Database のメトリクス収集機能です。  
+EZMonitor (Easy Monitor : 別名 Extra-Zaiba2 Monitor) は、Azure Functions と Log Analytics を使用した、SQL Database のメトリクス収集機能です。  
 Deploy to Azure から ARM Template による展開を行うことで、メトリクスの可視化を行う Workbook も含めてデプロイが行われます。。
 
  <img src="./img/workbook.png" />
@@ -12,7 +12,7 @@ Deploy to Azure から ARM Template による展開を行うことで、メト�
 1. Deploy to Azure から ARM テンプレートの展開を行います。  
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMasayukiOzawa%2FEzMonitor%2Fmaster%2FDeployments%2Fazuredeploy.json" target="_blank">
   <img src="https://aka.ms/deploytoazurebutton" />
-</a>
+</a>  
 1. 必要な情報を入力し、展開を行います。  
   - Sql Server Name :  情報取得対象の SQL Database 名 (ex : contoso.database.windows.net)  
   (SQL Database に接続する場合は、database.windows.net まで指定してください) 
