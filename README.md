@@ -46,6 +46,7 @@ Azure Functions により、Log Analytics に取得された情報は、この W
   - [Azure Monitor ログ クエリ](https://docs.microsoft.com/ja-jp/azure/azure-monitor/log-query/query-language)
   - [SQL から Azure Monitor ログ クエリへのチート シート](https://docs.microsoft.com/ja-jp/azure/azure-monitor/log-query/sql-cheatsheet)
   - [Kusto Query Language Overview](https://docs.microsoft.com/ja-jp/azure/data-explorer/kusto/query/)
+  - [Azure Monitor Community Repository is now available](https://azure.microsoft.com/en-us/updates/azure-monitor-community-repository-is-now-available-2/)
 - Log Analytics Workbook
   - [Azure Monitor ブック](https://docs.microsoft.com/ja-jp/azure/azure-monitor/platform/workbooks-overview)
   - [Azure Monitor for VMs のブックを使用した対話型レポートの作成](https://docs.microsoft.com/ja-jp/azure/azure-monitor/insights/vminsights-workbooks)
