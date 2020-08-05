@@ -1,0 +1,62 @@
+metrics_name: resource_pool
+monitor_sql: |
+    SELECT
+        @@servername AS server_name,
+        DB_NAME() AS database_name,
+        instance_name, 
+        CASE 
+            WHEN [CPU usage % base] = 0 THEN 0
+            ELSE ROUND([CPU usage %] * 1.0 / [CPU usage % base] * 100, 1) 
+        END AS [CPU usage percent],
+        [CPU usage target %] AS [CPU usage target percent],
+        [CPU control effect %] AS [CPU control effect percent],
+        CASE
+            WHEN [CPU effective % base] = 0 THEN 0
+            ELSE ROUND([CPU effective %] * 1.0 / [CPU effective % base] * 100,1)
+        END AS [CPU effective percent],
+        CASE
+            WHEN [CPU delayed % base] = 0 THEN 0
+            ELSE ROUND([CPU delayed %] * 1.0 / [CPU delayed % base] * 100, 1)
+        END AS [CPU delayed percent base],
+        [CPU violated %] AS [CPU violated percent],
+        [Compile memory target (KB)],
+        [Cache memory target (KB)],
+        [Query exec memory target (KB)],
+        [Memory grants/sec],
+        [Active memory grants count],
+        [Memory grant timeouts/sec],
+        [Active memory grant amount (KB)],
+        [Pending memory grants count],
+        [Max memory (KB)],
+        [Used memory (KB)],
+        [Target memory (KB)],
+        [Disk Read IO/sec],
+        [Disk Read IO Throttled/sec],
+        [Disk Read Bytes/sec],
+        CASE 
+            WHEN [Avg Disk Read IO (ms) Base] = 0 THEN 0
+            ELSE [Avg Disk Read IO (ms)] / [Avg Disk Read IO (ms) Base]
+        END AS [Avg Disk Read IO (ms)],
+        [Disk Write IO/sec],
+        [Disk Write IO Throttled/sec],
+        [Disk Write Bytes/sec],
+        CASE
+            WHEN [Avg Disk Write IO (ms) Base] = 0 THEN 0
+            ELSE [Avg Disk Write IO (ms)] / [Avg Disk Write IO (ms) Base]
+        END AS [Avg Disk Write IO (ms)]
+    FROM
+    (
+        SELECT
+            RTRIM(p.counter_name) AS counter_name,
+            RTRIM(p.instance_name) AS instance_name,
+            p.cntr_value
+        FROM
+            sys.dm_os_performance_counters AS p
+        WHERE
+            p.object_name LIKE '%Resource Pool Stats%'
+    ) AS T
+    PIVOT(
+        MAX(cntr_value)
+        FOR counter_name in ([CPU usage %],[CPU usage % base],[CPU usage target %],[CPU control effect %],[CPU effective %],[CPU effective % base],[CPU delayed %],[CPU delayed % base],[CPU violated %],[Compile memory target (KB)],[Cache memory target (KB)],[Query exec memory target (KB)],[Memory grants/sec],[Active memory grants count],[Memory grant timeouts/sec],[Active memory grant amount (KB)],[Pending memory grants count],[Max memory (KB)],[Used memory (KB)],[Target memory (KB)],[Disk Read IO/sec],[Disk Read IO Throttled/sec],[Disk Read Bytes/sec],[Avg Disk Read IO (ms)],[Avg Disk Read IO (ms) Base],[Disk Write IO/sec],[Disk Write IO Throttled/sec],[Disk Write Bytes/sec],[Avg Disk Write IO (ms)],[Avg Disk Write IO (ms) Base])
+    ) AS PVT
+    OPTION(MAXDOP 1)
