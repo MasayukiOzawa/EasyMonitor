@@ -13,7 +13,7 @@ monitor_sql: |
         CASE
             WHEN [Extended Stored Procedures:Cache Hit Ratio Base] = 0 THEN 0
             ELSE [Extended Stored Procedures:Cache Hit Ratio] * 1.0 / [Extended Stored Procedures:Cache Hit Ratio Base]  * 100
-        END AS [Extended Stored Procedures Cache Hit Ratio Base],
+        END AS [Extended Stored Procedures Cache Hit Ratio],
         [Extended Stored Procedures:Cache Pages] * 8 / 1024 AS [Extended Stored Procedures Cache MB],
         [Extended Stored Procedures:Cache Object Counts],
         [Extended Stored Procedures:Cache Objects in use],
