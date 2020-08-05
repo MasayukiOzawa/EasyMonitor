@@ -30,7 +30,7 @@ monitor_sql: |
         END AS [SQL Plans Cache Hit Ratio],
         [SQL Plans:Cache Pages] * 8 / 1024 AS [SQL Plans Cache MB],
         [SQL Plans:Cache Object Counts] AS [SQL Plans Cache Object Counts],
-        [SQL Plans:Cache Objects in use] AS [SQL Plans:Cache Objects in use],
+        [SQL Plans:Cache Objects in use] AS [SQL Plans Cache Objects in use],
         CASE
             WHEN [Object Plans:Cache Hit Ratio Base] = 0 THEN 0
             ELSE [Object Plans:Cache Hit Ratio] * 1.0 / [Object Plans:Cache Hit Ratio Base] * 100
