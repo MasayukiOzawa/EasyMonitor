@@ -1,6 +1,8 @@
 metrics_name: plan_cache
 monitor_sql: |
     SELECT
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
         CASE 
             WHEN [Temporary Tables & Table Variables:Cache Hit Ratio Base] =0 THEN 0 
             ELSE [Temporary Tables & Table Variables:Cache Hit Ratio] * 1.0 / [Temporary Tables & Table Variables:Cache Hit Ratio Base] * 100

@@ -18,8 +18,28 @@ monitor_sql: |
         CASE
             WHEN [Buffer cache hit ratio base] = 0 THEN 0
             ELSE [Buffer cache hit ratio] * 1.0  / [Buffer cache hit ratio base] * 100
-        END AS [buffer_cache_hit_ratio]
-        FROM
+        END AS [buffer_cache_hit_ratio],
+        [External benefit of memory],
+        [Connection Memory (KB)] / 1024 AS [connection_memory_MB],
+        [Database Cache Memory (KB)] / 1024 AS [database_cache_memory_MB],
+        [Free Memory (KB)] / 1024 AS [free_memory_MB],
+        [Granted Workspace Memory (KB)] / 1024 AS [granted_workspace_memory_MB],
+        [Lock Memory (KB)] / 1024 AS [lock_memory_MB],
+        [Lock Blocks Allocated] AS [lock_blocks_allocated],
+        [Lock Owner Blocks Allocated] AS [lock_owner_blocks_allocated],
+        [Lock Blocks] AS [lock_blocks],
+        [Lock Owner Blocks] AS [lock_owner_blocks],
+        [Maximum Workspace Memory (KB)] / 1024 AS [maximum_workspace_memory_MB],
+        [Memory Grants Outstanding] AS [memory_grants_outstanding],
+        [Memory Grants Pending] AS [memory_grants_pending],
+        [Optimizer Memory (KB)] / 1024 AS [optimizer_memory_MB],
+        [Reserved Server Memory (KB)] / 1024 AS [reserved_server_memory_MB],
+        [SQL Cache Memory (KB)] / 1024 AS [sql_cache_memory_MB],
+        [Stolen Server Memory (KB)] / 1024 AS [stolen_server_memory_MB],
+        [Log Pool Memory (KB)] / 1024 AS [log_pool_memory_MB],
+        [Target Server Memory (KB)] / 1024 AS [target_server_memory_MB],
+        [Total Server Memory (KB)] / 1024 AS [total_server_memory_MB]
+    FROM
         (
         SELECT 
             RTRIM(counter_name) AS counter_name,
@@ -29,6 +49,7 @@ monitor_sql: |
             sys.dm_os_performance_counters WITH(NOLOCK)
         WHERE
             object_name LIKE '%Buffer Manager%'
+            OR object_name LIKE '%Memory Manager%'
         ) AS T
         PIVOT(
             MAX(cntr_value)
@@ -46,7 +67,28 @@ monitor_sql: |
                 [Background writer pages/sec],
                 [Page life expectancy],
                 [Buffer cache hit ratio],
-                [Buffer cache hit ratio base]
+                [Buffer cache hit ratio base],
+                [External benefit of memory],
+                [Connection Memory (KB)],
+                [Database Cache Memory (KB)],
+                [Free Memory (KB)],
+                [Granted Workspace Memory (KB)],
+                [Lock Memory (KB)],
+                [Lock Blocks Allocated],
+                [Lock Owner Blocks Allocated],
+                [Lock Blocks],
+                [Lock Owner Blocks],
+                [Maximum Workspace Memory (KB)],
+                [Memory Grants Outstanding],
+                [Memory Grants Pending],
+                [Optimizer Memory (KB)],
+                [Reserved Server Memory (KB)],
+                [SQL Cache Memory (KB)],
+                [Stolen Server Memory (KB)],
+                [Log Pool Memory (KB)],
+                [Decommit Memory (KB)/sec],
+                [Target Server Memory (KB)],
+                [Total Server Memory (KB)]
             )
         ) AS PVT
     OPTION(MAXDOP 1)
