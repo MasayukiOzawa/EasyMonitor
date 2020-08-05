@@ -19,7 +19,7 @@ monitor_sql: |
             WHEN [Buffer cache hit ratio base] = 0 THEN 0
             ELSE [Buffer cache hit ratio] * 1.0  / [Buffer cache hit ratio base] * 100
         END AS [buffer_cache_hit_ratio],
-        [External benefit of memory],
+        [External benefit of memory] AS [external_benefit_of_memory],
         [Connection Memory (KB)] / 1024 AS [connection_memory_MB],
         [Database Cache Memory (KB)] / 1024 AS [database_cache_memory_MB],
         [Free Memory (KB)] / 1024 AS [free_memory_MB],
