@@ -1,0 +1,62 @@
+metrics_name: plan_cache
+monitor_sql: |
+    SELECT
+        CASE 
+            WHEN [Temporary Tables & Table Variables:Cache Hit Ratio Base] =0 THEN 0 
+            ELSE [Temporary Tables & Table Variables:Cache Hit Ratio] * 1.0 / [Temporary Tables & Table Variables:Cache Hit Ratio Base] * 100
+        END AS [Temporary Tables and Table Variables Cache Hit Ratio],
+        [Temporary Tables & Table Variables:Cache Pages] * 8 / 1024 AS [Temporary Tables and Table Variables Cache MB],
+        [Temporary Tables & Table Variables:Cache Object Counts] AS [Temporary Tables and Table Variables Cache Object Counts] ,
+        [Temporary Tables & Table Variables:Cache Objects in use] AS [Temporary Tables and Table Variables Cache Objects in use],
+        CASE
+            WHEN [Extended Stored Procedures:Cache Hit Ratio Base] = 0 THEN 0
+            ELSE [Extended Stored Procedures:Cache Hit Ratio] * 1.0 / [Extended Stored Procedures:Cache Hit Ratio Base]  * 100
+        END AS [Extended Stored Procedures Cache Hit Ratio Base],
+        [Extended Stored Procedures:Cache Pages] * 8 / 1024 AS [Extended Stored Procedures Cache MB],
+        [Extended Stored Procedures:Cache Object Counts],
+        [Extended Stored Procedures:Cache Objects in use],
+        CASE
+            WHEN [Bound Trees:Cache Hit Ratio Base]  = 0 THEN 0
+            ELSE [Bound Trees:Cache Hit Ratio] * 1.0 / [Bound Trees:Cache Hit Ratio Base]  * 100
+        END AS [Bound Trees Cache Hit Ratio],
+        [Bound Trees:Cache Pages] * 8 / 1024 AS [Bound Trees Cache MB],
+        [Bound Trees:Cache Object Counts],
+        [Bound Trees:Cache Objects in use],
+        CASE 
+            WHEN [SQL Plans:Cache Hit Ratio Base] = 0 THEN 0
+            ELSE [SQL Plans:Cache Hit Ratio] * 1.0 / [SQL Plans:Cache Hit Ratio Base]  * 100
+        END AS [SQL Plans Cache Hit Ratio],
+        [SQL Plans:Cache Pages] * 8 / 1024 AS [SQL Plans Cache MB],
+        [SQL Plans:Cache Object Counts],
+        [SQL Plans:Cache Objects in use],
+        CASE
+            WHEN [Object Plans:Cache Hit Ratio Base] = 0 THEN 0
+            ELSE [Object Plans:Cache Hit Ratio] * 1.0 / [Object Plans:Cache Hit Ratio Base] * 100
+        END AS [Object Plans Cache Hit Ratio],
+        [Object Plans:Cache Pages] * 8 / 1024 AS [Object Plans Cache MB],
+        [Object Plans:Cache Object Counts],
+        [Object Plans:Cache Objects in use],
+        CASE
+            WHEN [_Total:Cache Hit Ratio Base] = 0 THEN 0
+            ELSE [_Total:Cache Hit Ratio] * 1.0 / [_Total:Cache Hit Ratio Base] * 100
+        END AS [_Total:Cache Hit Ratio],
+        [_Total:Cache Pages] * 8 / 1024 AS [Total Cache MB],
+        [_Total:Cache Object Counts],
+        [_Total:Cache Objects in use]
+    FROM
+    (
+        SELECT 
+            CASE
+                WHEN p.instance_name = '' THEN RTRIM(counter_name)
+                ELSE RTRIM(instance_name) + ':' + RTRIM(counter_name)
+            END AS counter_name,
+            p.cntr_value
+        FROM 
+            sys.dm_os_performance_counters AS p
+        WHERE
+            p.object_name LIKE '%Plan Cache%'
+    ) AS T
+    PIVOT(
+        MAX(cntr_value)
+        FOR counter_name IN([Buffer cache hit ratio],[Buffer cache hit ratio base],[Temporary Tables & Table Variables:Cache Hit Ratio],[Temporary Tables & Table Variables:Cache Hit Ratio Base],[Temporary Tables & Table Variables:Cache Pages],[Temporary Tables & Table Variables:Cache Object Counts],[Temporary Tables & Table Variables:Cache Objects in use],[Extended Stored Procedures:Cache Hit Ratio],[Extended Stored Procedures:Cache Hit Ratio Base],[Extended Stored Procedures:Cache Pages],[Extended Stored Procedures:Cache Object Counts],[Extended Stored Procedures:Cache Objects in use],[Bound Trees:Cache Hit Ratio],[Bound Trees:Cache Hit Ratio Base],[Bound Trees:Cache Pages],[Bound Trees:Cache Object Counts],[Bound Trees:Cache Objects in use],[SQL Plans:Cache Hit Ratio],[SQL Plans:Cache Hit Ratio Base],[SQL Plans:Cache Pages],[SQL Plans:Cache Object Counts],[SQL Plans:Cache Objects in use],[Object Plans:Cache Hit Ratio],[Object Plans:Cache Hit Ratio Base],[Object Plans:Cache Pages],[Object Plans:Cache Object Counts],[Object Plans:Cache Objects in use],[_Total:Cache Hit Ratio],[_Total:Cache Hit Ratio Base],[_Total:Cache Pages],[_Total:Cache Object Counts],[_Total:Cache Objects in use])
+    ) AS PVT
