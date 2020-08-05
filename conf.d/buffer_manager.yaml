@@ -1,4 +1,4 @@
-metrics_name: memory_manager
+metrics_name: buffer_manager
 monitor_sql: |
     SELECT
         @@SERVERNAME AS server_name,
@@ -14,8 +14,12 @@ monitor_sql: |
         [Page writes/sec] AS page_writes_sec,
         [Checkpoint pages/sec] AS checkpoint_pages_sec,
         [Background writer pages/sec] AS background_writer_pages_sec,
-        [Page life expectancy] AS page_life_expectancy
-    FROM
+        [Page life expectancy] AS page_life_expectancy,
+        CASE
+            WHEN [Buffer cache hit ratio base] = 0 THEN 0
+            ELSE [Buffer cache hit ratio] * 1.0  / [Buffer cache hit ratio base] * 100
+        END AS [buffer_cache_hit_ratio]
+        FROM
         (
         SELECT 
             RTRIM(counter_name) AS counter_name,
@@ -25,8 +29,6 @@ monitor_sql: |
             sys.dm_os_performance_counters WITH(NOLOCK)
         WHERE
             object_name LIKE '%Buffer Manager%'
-            AND
-            cntr_type IN(65792, 272696576)
         ) AS T
         PIVOT(
             MAX(cntr_value)
@@ -42,7 +44,9 @@ monitor_sql: |
                 [Page writes/sec],
                 [Checkpoint pages/sec],
                 [Background writer pages/sec],
-                [Page life expectancy]
+                [Page life expectancy],
+                [Buffer cache hit ratio],
+                [Buffer cache hit ratio base]
             )
         ) AS PVT
     OPTION(MAXDOP 1)
