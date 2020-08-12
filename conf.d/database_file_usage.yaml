@@ -14,7 +14,8 @@ monitor_sql: |
         vf.io_stall_write_ms,
         CEILING(vf.size_on_disk_bytes / POWER(1024.0, 2)) AS size_on_disk_MBytes,
         CEILING(df.max_size * 8.0 / 1024) AS max_size_MBytes,
-        CEILING(df.size * 8.0 / 1024) AS size_MBytes
+        CEILING(df.size * 8.0 / 1024) AS size_MBytes,
+        CEILING(FILEPROPERTY(df.name, 'SpaceUsed') * 8.0 / 1024) AS space_used_MBytes
     FROM
         sys.dm_io_virtual_file_stats(DB_ID(), NULL) AS vf
     LEFT JOIN sys.database_files AS df
