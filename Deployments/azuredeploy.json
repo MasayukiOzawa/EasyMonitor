@@ -101,7 +101,7 @@
                 },
                 "parameters": {
                     "workbookSourceId": {
-                        "value": "[resourceId('microsoft.insights/workbooks', concat('ezmonitor-', variables('uniqueId')))]"
+                        "value": "[resourceId('Microsoft.OperationalInsights/workspaces', concat('ezmonitor-', variables('uniqueId')))]"
                     }
                 }
             }
