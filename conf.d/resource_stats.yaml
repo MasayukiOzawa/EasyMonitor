@@ -2,7 +2,7 @@ metrics_name: resource_stats
 monitor_sql: |
     SELECT TOP 1
         @@SERVERNAME AS server_name,
-        DB_NAME() AS database_name
+        DB_NAME() AS database_name,
         rs.avg_cpu_percent,
         rs.avg_data_io_percent,
         rs.avg_log_write_percent,
