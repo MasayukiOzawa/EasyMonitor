@@ -1,0 +1,22 @@
+metrics_name: resource_pool
+monitor_sql: |
+    SELECT TOP 1
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name
+        rs.avg_cpu_percent,
+        rs.avg_data_io_percent,
+        rs.avg_log_write_percent,
+        rs.avg_memory_usage_percent,
+        rs.xtp_storage_percent,
+        rs.max_worker_percent,
+        rs.max_session_percent,
+        rs.dtu_limit,
+        rs.avg_login_rate_percent,
+        rs.avg_instance_cpu_percent,
+        rs.avg_instance_memory_percent,
+        rs.cpu_limit,
+        rs.replica_role
+    FROM
+        sys.dm_db_resource_stats AS rs
+    ORDER BY 
+        end_time DESC
