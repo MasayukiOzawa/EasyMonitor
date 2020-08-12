@@ -3,7 +3,7 @@ monitor_sql: |
     SELECT
         @@SERVERNAME AS server_name,
         DB_NAME() AS database_name,
-        df.file_id,
+        vf.file_id,
         df.type_desc,
         df.name,
         vf.num_of_reads,
