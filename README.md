@@ -25,7 +25,6 @@ Deploying from Deploy to Azure using the ARM Template will also include the Work
     GRANT VIEW DATABASE STATE TO <Login Name>
     ```
     - Max Thread : Specifies how many parallels to obtain information when the function is executed
-    - Workbook Id : Do not change it, as it becomes the GUID of the Workbook for data visualization
 <img src="./img/TemplateDeploy.png">
 
 

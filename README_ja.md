@@ -26,7 +26,6 @@ Deploy to Azure から ARM Template による展開を行うことで、メト�
     GRANT VIEW DATABASE STATE TO <ログイン名>
     ```
     - Max Thread : 関数実行時に何並列で情報の取得を行うかの指定
-    - Workbook Id : データ可視化用の Workbook の GUID となるため、変更しないでください
 <img src="./img/TemplateDeploy.png">
 
 
