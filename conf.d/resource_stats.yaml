@@ -1,4 +1,4 @@
-metrics_name: resource_pool
+metrics_name: resource_stats
 monitor_sql: |
     SELECT TOP 1
         @@SERVERNAME AS server_name,
