@@ -20,3 +20,4 @@ monitor_sql: |
         sys.dm_db_resource_stats AS rs
     ORDER BY 
         end_time DESC
+    OPTION(MAXDOP 1)
