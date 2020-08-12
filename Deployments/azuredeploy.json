@@ -89,11 +89,10 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
-            "name": "getSerializedData",
+            "name": "deployWorkbook",
             "dependsOn": [
                 "[concat('microsoft.operationalinsights/workspaces/', concat('ezmonitor-', variables('uniqueId')))]"
             ],
-
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {

@@ -10,8 +10,7 @@
       "defaultValue": "workbook"
     },
     "workbookSourceId": {
-      "type": "string",
-      "defaultValue": ""
+      "type": "string"
     },
     "workbookId": {
       "type": "string",
