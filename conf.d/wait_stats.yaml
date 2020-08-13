@@ -122,7 +122,7 @@ monitor_sql: |
                                 'INSTANCE_LOG_RATE_GOVERNOR'
                             ) THEN 'log_rate_governor'
             WHEN wait_type LIKE 'BACKUP%' AND wait_type <> 'BACKUPBUFFER' THEN 'backup'
-            WHEN wait_Type LIKE 'WAIT_RBIO%' THEN 'hs_remote_block_io'
+            WHEN wait_Type LIKE 'WAIT_RBIO%' OR wait_Type LIKE 'RBIO%'THEN 'hs_remote_block_io'
             ELSE 'unknown'
         END AS wait_category
     FROM
