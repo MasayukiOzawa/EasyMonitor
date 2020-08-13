@@ -10,7 +10,7 @@ monitor_sql: |
         , PerfInfo.*
         , JobObject.*
         , ResourceGovernance.*
-        , (SELECT SUM(current_workers_count) FROM sys.dm_os_schedulers WHERE status = 'VISIBLE ONLINE') AS [Worker Count]
+        , (SELECT SUM(active_workers_count) FROM sys.dm_os_schedulers WHERE status = 'VISIBLE ONLINE') AS [Worker Count]
     FROM (
     SELECT TOP 1
         record.value('(./Record/@id)[1]', 'int') AS record_id
