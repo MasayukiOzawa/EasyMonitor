@@ -12,6 +12,7 @@ monitor_sql: |
         vf.num_of_writes,
         CEILING(vf.num_of_bytes_written / POWER(1024.0, 2)) AS num_of_Mbytes_written,
         vf.io_stall_write_ms,
+        vf.io_stall,
         CEILING(vf.size_on_disk_bytes / POWER(1024.0, 2)) AS size_on_disk_MBytes,
         CEILING(df.max_size * 8.0 / 1024) AS max_size_MBytes,
         CEILING(df.size * 8.0 / 1024) AS size_MBytes,
