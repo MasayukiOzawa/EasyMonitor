@@ -1,14 +1,20 @@
 metrics_name: tempdb_usage
 monitor_sql: |
     SELECT
-        file_id, 
-        total_page_count * 8 / 1024 AS total_page_MB,
-        allocated_extent_page_count * 8 / 1024 AS allocated_extent_page_MB,
-        unallocated_extent_page_count * 8 / 1024 AS unallocated_extent_page_MB,
-        version_store_reserved_page_count * 8 / 1024 AS version_store_reserved_page_MB,
-        user_object_reserved_page_count * 8 / 1024 AS user_object_reserved_page_MB,
-        internal_object_reserved_page_count * 8 / 1024 AS internal_object_reserved_page_MB,
-        mixed_extent_page_count * 8 / 1024 AS mixed_extent_page_MB,
-        modified_extent_page_count * 8 / 1024 AS mixed_extent_page_MB
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
+        su.file_id,
+        d.name,
+        d.max_size * 8 / 1024 AS max_size_MB,
+        su.total_page_count * 8 / 1024 AS total_page_MB,
+        su.allocated_extent_page_count * 8 / 1024 AS allocated_extent_page_MB,
+        su.unallocated_extent_page_count * 8 / 1024 AS unallocated_extent_page_MB,
+        su.version_store_reserved_page_count * 8 / 1024 AS version_store_reserved_page_MB,
+        su.user_object_reserved_page_count * 8 / 1024 AS user_object_reserved_page_MB,
+        su.internal_object_reserved_page_count * 8 / 1024 AS internal_object_reserved_page_MB,
+        su.mixed_extent_page_count * 8 / 1024 AS mixed_extent_page_MB,
+        su.modified_extent_page_count * 8 / 1024 AS mixed_extent_page_MB
     FROM 
-        tempdb.sys.dm_db_file_space_usage;
+        tempdb.sys.dm_db_file_space_usage AS su
+        INNER JOIN tempdb.sys.database_files AS d
+            ON d.file_id = su.file_id
