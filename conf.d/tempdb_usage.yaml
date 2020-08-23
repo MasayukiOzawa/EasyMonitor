@@ -1,0 +1,14 @@
+metrics_name: tempdb_usage
+monitor_sql: |
+    SELECT
+        file_id, 
+        total_page_count * 8 / 1024 AS total_page_MB,
+        allocated_extent_page_count * 8 / 1024 AS allocated_extent_page_MB,
+        unallocated_extent_page_count * 8 / 1024 AS unallocated_extent_page_MB,
+        version_store_reserved_page_count * 8 / 1024 AS version_store_reserved_page_MB,
+        user_object_reserved_page_count * 8 / 1024 AS user_object_reserved_page_MB,
+        internal_object_reserved_page_count * 8 / 1024 AS internal_object_reserved_page_MB,
+        mixed_extent_page_count * 8 / 1024 AS mixed_extent_page_MB,
+        modified_extent_page_count * 8 / 1024 AS mixed_extent_page_MB
+    FROM 
+        tempdb.sys.dm_db_file_space_usage;
