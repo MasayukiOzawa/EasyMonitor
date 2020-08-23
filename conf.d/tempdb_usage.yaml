@@ -13,7 +13,7 @@ monitor_sql: |
         su.user_object_reserved_page_count * 8 / 1024 AS user_object_reserved_page_MB,
         su.internal_object_reserved_page_count * 8 / 1024 AS internal_object_reserved_page_MB,
         su.mixed_extent_page_count * 8 / 1024 AS mixed_extent_page_MB,
-        su.modified_extent_page_count * 8 / 1024 AS mixed_extent_page_MB
+        su.modified_extent_page_count * 8 / 1024 AS modified_extent_page_MB
     FROM 
         tempdb.sys.dm_db_file_space_usage AS su
         INNER JOIN tempdb.sys.database_files AS d
