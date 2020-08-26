@@ -1,4 +1,4 @@
-metrics_name: wait_stats
+metrics_name: wait_stats_detail
 monitor_sql: |
     SELECT
         wait_type, 
