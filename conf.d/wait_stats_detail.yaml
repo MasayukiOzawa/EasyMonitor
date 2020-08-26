@@ -1,6 +1,8 @@
 metrics_name: wait_stats_detail
 monitor_sql: |
     SELECT
+        @@SERVERNAME AS server_name,
+        DB_NAME() AS database_name,
         wait_type, 
         waiting_tasks_count,
         wait_time_ms,
