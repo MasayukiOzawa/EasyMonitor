@@ -1,0 +1,24 @@
+metrics_name: wait_stats
+monitor_sql: |
+    SELECT
+        wait_type, 
+        waiting_tasks_count,
+        wait_time_ms,
+        max_wait_time_ms,
+        signal_wait_time_ms,
+        avg_wait_time_ms,
+        CAST(avg_wait_time_ms * 1.0 / total_wait_time_ms * 100 AS numeric(7,4)) AS wait_percent
+    FROM
+    (
+        SELECT
+            *, 
+            wait_time_ms / waiting_tasks_count AS avg_wait_time_ms,
+            (SELECT SUM(wait_time_ms / waiting_tasks_count) FROM sys.dm_os_wait_stats WHERE waiting_tasks_count > 0 and wait_time_ms > 0) AS total_wait_time_ms
+        FROM 
+            sys.dm_os_Wait_stats 
+        WHERE 
+            waiting_tasks_count > 0 and wait_time_ms > 0
+    ) AS T
+
+    ORDER BY avg_wait_time_ms DESC
+    OPTION(MAXDOP 1)
