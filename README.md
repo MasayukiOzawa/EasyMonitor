@@ -1,9 +1,9 @@
-# EZMonitor
+# Easy Monitor
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMasayukiOzawa%2FEzMonitor%2Fmaster%2FDeployments%2Fazuredeploy.json" target="_blank">
   <img src="https://aka.ms/deploytoazurebutton" />
 </a>
 
-EZMonitor (Easy Monitor: aka Extra-Zaiba2 Monitor) is a SQL Database metrics collection function that uses Azure Functions and Log Analytics.  
+Easy Monitor is a SQL Database metrics collection function that uses Azure Functions and Log Analytics.  
 Deploying from Deploy to Azure using the ARM Template will also include the Workbook, which makes metrics visible.
 
  <img src="./img/workbook.png" />
